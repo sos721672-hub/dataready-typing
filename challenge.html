@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تحديات الكتابة</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #ffe0f0;
+      direction: rtl;
+      padding: 2rem;
+      color: #222;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .challenge-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    .challenge-btn, .start-btn, button {
+      background-color: #d6458b;
+      color: white;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: 0.3s;
+    }
+    .challenge-btn:hover, .start-btn:hover, button:hover {
+      background-color: #b93b79;
+    }
+    textarea, input[type="text"], input[type="email"], .typing-input {
+      padding: 1rem;
+      font-size: 1rem;
+      width: 80%;
+      margin: 10px auto;
+      display: block;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    #typing-input {
+      width: 100%;
+    }
+    .typing-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .typing-box {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 28px;
+      line-height: 60px;
+    }
+    .correct { background-color: #d0f0d0; border-color: #2ecc71; }
+    .incorrect { background-color: #fce4e4; border-color: #e74c3c; }
+    #hand-test .letter-box {
+      font-size: 60px;
+      margin: 30px 0;
+      color: #16a085;
+    }
+    .quote {
+      background-color: #ffd6e7;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      color: #b93b79;
+    }
+    #timer, #timer-ch1 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #d6458b;
+      margin-top: 1rem;
+    }
+    .results-section {
+      margin-top: 2rem;
+      text-align: right;
+      font-size: 1.1rem;
+      background: #fff0f8;
+      padding: 1rem;
+      border-radius: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- شاشة البداية -->
+    <div id="start-screen">
+      <h2>🎯 مرحباً بك في تحديات الكتابة!</h2>
+      <p class="quote">💡 "كل حرف تكتبه هو خطوة نحو الإتقان، ابدأ بقوة وركز بدقة!"</p>
+      <input type="text" id="user-name" placeholder="ادخل اسمك" required>
+      <input type="email" id="user-email" placeholder="ادخل بريدك الإلكتروني" required>
+      <button class="start-btn" onclick="beginChallenge()">ابدأ التحدي 🚀</button>
+    </div>
+
+    <!-- الواجهة الرئيسية -->
+    <div id="main-interface" style="display:none;">
+      <h2>🎯 اختر التحدي</h2>
+      <div class="challenge-buttons">
+        <button class="challenge-btn" onclick="startChallenge1()">🎮 تحدي 1</button>
+        <button class="challenge-btn" onclick="startAslTest()">🏁 التحدي 2</button>
+        <button class="challenge-btn" onclick="startHandTest()">🎮 التحدي 3</button>
+      </div>
+
+      <!-- تحدي 1 -->
+      <div id="challenge1" style="display:none;">
+        <h3>🎯 تحدي السرعة والدقة - نص ممتد</h3>
+        <p>🕒 اكتب النص التالي بدقة خلال الوقت المحدد!</p>
+        <div id="target-text" style="font-family: monospace; user-select: none;">
+          fjkd fjkd fj fjkd kd fj fjkd kdfj jdfk djkf<br />
+          dfkj fjkd kd kdjf jfkd ddff fj kkkk jfkd kdjk<br />
+          fj jjkk fjk fjdj fjkd jdkf fj fkjd kjdf dfjk<br />
+          fjdk ffff jfkd djkf fjkd ddjj jdfk kdjf fjkd
+        </div>
+        <textarea id="user-input" placeholder="اكتب هنا تمامًا كما هو ظاهر أعلاه..."></textarea>
+        <div id="timer-ch1">⏱ الوقت المتبقي: 150 ثانية</div>
+        <button id="finish-btn">إنهاء التحدي</button>
+
+        <div id="results-container" style="display:none;">
+          <h2>📊 نتيجة التحدي</h2>
+          <p id="summary"></p>
+          <div id="errors-list" class="results-section"></div>
+          <button id="retry-btn">إعادة التحدي</button>
+        </div>
+        <audio id="end-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+      </div>
+
+      <!-- تحدي 2 (ASL) -->
+      <div id="asl-test" style="display:none;">
+        <h3>🏁 تحدي الطباعة - حروف A S L ;</h3>
+        <p>✍️ اكتب التتابع التالي بشكل صحيح:</p>
+        <div id="phase-text" class="typing-boxes"></div>
+        <input type="text" id="typing-input" class="typing-input" placeholder="ابدأ الكتابة هنا...">
+        <div class="result" id="feedback-asl"></div>
+      </div>
+
+      <!-- تحدي 3 (اختبار اليد) -->
+      <!-- تحدي 3 (اختبار اليد) -->
+<div id="hand-test" style="display:none;">
+  <h3>🎮 اختبار اليد الصحيحة - 20 جولة</h3>
+  <div class="letter-box" id="letter-box">A</div>
+
+  <div id="single-buttons">
+    <button onclick="submitHand('left')">👈 يسار</button>
+    <button onclick="submitHand('right')">👉 يمين</button>
+  </div>
+
+ <div id="dual-buttons" style="display: none; flex-direction: column; gap: 10px;">
+  <button id="btn1" onclick="submitHand(this.dataset.choice)">—</button>
+  <button id="btn2" onclick="submitHand(this.dataset.choice)">—</button>
+</div>
+
+
+  <div id="feedback"></div>
+  <div id="timer"></div>
+  <div id="result"></div>
+</div>
+
+
+    <!-- السكربتات -->
+    <script>
+      function beginChallenge() {
+        document.getElementById("start-screen").style.display = "none";
+        document.getElementById("main-interface").style.display = "block";
+      }
+
+      // ========== تحدي 1 ==========
+      function startChallenge1() {
+        hideAll();
+        document.getElementById("challenge1").style.display = "block";
+        initChallenge1();
+      }
+
+      function initChallenge1() {
+        const target = document.getElementById("target-text").textContent.trim().replace(/\s+/g, ' ');
+        const input = document.getElementById("user-input");
+        const timer = document.getElementById("timer-ch1");
+        const finishBtn = document.getElementById("finish-btn");
+        const endSound = document.getElementById("end-sound");
+        const resultsContainer = document.getElementById("results-container");
+        const summary = document.getElementById("summary");
+        const errorsList = document.getElementById("errors-list");
+        const retryBtn = document.getElementById("retry-btn");
+
+        let timeLeft = 150;
+        let interval;
+        let started = false;
+
+        input.value = "";
+        input.disabled = false;
+        resultsContainer.style.display = "none";
+        timer.textContent = `⏱ الوقت المتبقي: ${timeLeft} ثانية`;
+
+        input.oninput = () => {
+          if (!started) {
+            started = true;
+            interval = setInterval(() => {
+              timeLeft--;
+              timer.textContent = `⏱ الوقت المتبقي: ${timeLeft} ثانية`;
+              if (timeLeft <= 0) {
+                clearInterval(interval);
+                input.disabled = true;
+                finishChallenge();
+              }
+            }, 1000);
+          }
+        };
+
+        finishBtn.onclick = finishChallenge;
+        retryBtn.onclick = () => initChallenge1();
+
+        function finishChallenge() {
+          clearInterval(interval);
+          input.disabled = true;
+          endSound.play();
+
+          const typed = input.value.trim().replace(/\s+/g, ' ');
+          const timeUsed = 150 - timeLeft;
+          const targetWords = target.split(' ');
+          const typedWords = typed.split(' ');
+          let errors = [], correctCount = 0;
+
+          for (let i = 0; i < Math.max(targetWords.length, typedWords.length); i++) {
+            const expected = targetWords[i] || "";
+            const actual = typedWords[i] || "";
+            if (expected === actual) correctCount++;
+            else errors.push({ pos: i + 1, expected, actual });
+          }
+
+          const accuracy = ((correctCount / targetWords.length) * 100).toFixed(2);
+          const speed = (typedWords.length / (timeUsed / 60)).toFixed(0);
+          const score = Math.max(correctCount - errors.length, 0);
+
+          summary.innerHTML = `
+            ✅ الدقة: ${accuracy}%<br>
+            🚀 السرعة: ${speed} كلمة/دقيقة<br>
+            🏁 العلامة: ${score} / ${targetWords.length}<br>
+            ❌ الأخطاء: ${errors.length}<br>
+            ⏱ الوقت المستخدم: ${timeUsed} ثانية
+          `;
+
+          if (errors.length === 0) {
+            errorsList.innerHTML = `<p class="correct">🎉 لا توجد أخطاء!</p>`;
+          } else {
+            errorsList.innerHTML = `<ul>` + errors.map(e =>
+              `<li>في الكلمة ${e.pos}: كتبت '${e.actual || "لا شيء"}' بدلاً من '${e.expected}'</li>`
+            ).join('') + `</ul>`;
+          }
+
+          resultsContainer.style.display = "block";
+        }
+      }
+
+      // ========== تحدي 2 ==========
+      const phases = ["AS;L", ";LSA", "S;LA", "LAS;", "A;SL"];
+      let currentPhase = 0;
+
+      function startAslTest() {
+        hideAll();
+        document.getElementById("asl-test").style.display = "block";
+        renderPhase();
+      }
+
+      function renderPhase() {
+        const boxes = document.getElementById("phase-text");
+        const input = document.getElementById("typing-input");
+        const feedback = document.getElementById("feedback-asl");
+
+        boxes.innerHTML = "";
+        phases[currentPhase].split("").forEach(char => {
+          const box = document.createElement("div");
+          box.className = "typing-box";
+          box.textContent = char;
+          boxes.appendChild(box);
+        });
+
+        input.value = "";
+        input.disabled = false;
+        feedback.textContent = "";
+
+        input.oninput = () => {
+          const expected = phases[currentPhase];
+          const typed = input.value;
+          const boxElements = document.querySelectorAll(".typing-box");
+
+          boxElements.forEach((box, i) => {
+            box.className = "typing-box";
+            if (typed[i] === expected[i]) box.classList.add("correct");
+            else if (typed[i]) box.classList.add("incorrect");
+          });
+
+          if (typed === expected) {
+            feedback.innerHTML = `🎉 <span class="correct">أحسنت! المرحلة التالية...</span>`;
+            setTimeout(() => {
+              currentPhase++;
+              if (currentPhase < phases.length) renderPhase();
+              else {
+                feedback.innerHTML = `🏆 <span class="correct">انتهيت من كل المراحل!</span>`;
+                input.disabled = true;
+              }
+            }, 1000);
+          } else if (typed.length === expected.length) {
+            feedback.innerHTML = `❌ <span class="incorrect">تحقق من الأحرف</span>`;
+          }
+        };
+      }
+
+      // ========== تحدي 3 ==========
+     // ========== تحدي 3 ==========
+const handLetters = [
+  { char: 'A', hand: 'left' }, { char: 'S', hand: 'left' }, { char: 'D', hand: 'left' }, { char: 'F', hand: 'left' },
+  { char: 'J', hand: 'right' }, { char: 'K', hand: 'right' }, { char: 'L', hand: 'right' }, { char: ';', hand: 'right' },
+  { char: 'AL', hand: 'right-left' }, { char: 'KS', hand: 'right-left' }, { char: 'DJ', hand: 'left-right' }, { char: 'FA', hand: 'left-left' },
+  { char: 'LK', hand: 'right-right' }, { char: 'S;', hand: 'left-right' }, { char: 'AD', hand: 'left-left' }, { char: 'JK', hand: 'right-right' },
+  { char: 'F;', hand: 'left-right' }, { char: 'DL', hand: 'left-right' }, { char: 'AS', hand: 'left-left' }, { char: 'K;', hand: 'right-right' }
+];
+
+let currentLetter = {}, currentRound = 0, score = 0;
+
+function startHandTest() {
+  hideAll();
+  document.getElementById("hand-test").style.display = "block";
+  currentRound = 0; score = 0;
+  document.getElementById("letter-box").style.display = "block";
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("timer").style.display = "block";
+  document.getElementById("result").textContent = '';
+  nextRound();
+}
+
+function nextRound() {
+  currentLetter = handLetters[Math.floor(Math.random() * handLetters.length)];
+  document.getElementById("letter-box").textContent = currentLetter.char;
+  document.getElementById("feedback").textContent = '';
+  document.getElementById("timer").textContent = `الجولة ${currentRound + 1} من 20`;
+
+ if (currentLetter.char.length === 1) {
+  document.getElementById("single-buttons").style.display = "block";
+  document.getElementById("dual-buttons").style.display = "none";
+} else {
+  document.getElementById("single-buttons").style.display = "none";
+  document.getElementById("dual-buttons").style.display = "flex";
+
+  const btn1 = document.getElementById("btn1");
+  const btn2 = document.getElementById("btn2");
+
+  // الاحتمالات المتاحة
+  const choices = {
+    'left-left': 'يسار ثم يسار',
+    'left-right': 'يسار ثم يمين',
+    'right-left': 'يمين ثم يسار',
+    'right-right': 'يمين ثم يمين'
+  };
+
+  // الجواب الصحيح
+  const correct = currentLetter.hand;
+
+  // توليد خيار خاطئ عشوائي
+  let wrongOptions = Object.keys(choices).filter(c => c !== correct);
+  let wrong = wrongOptions[Math.floor(Math.random() * wrongOptions.length)];
+
+  // ترتيب الزرين عشوائيًا
+  const showFirstCorrect = Math.random() < 0.5;
+
+  if (showFirstCorrect) {
+    btn1.textContent = choices[correct];
+    btn1.dataset.choice = correct;
+    btn2.textContent = choices[wrong];
+    btn2.dataset.choice = wrong;
+  } else {
+    btn1.textContent = choices[wrong];
+    btn1.dataset.choice = wrong;
+    btn2.textContent = choices[correct];
+    btn2.dataset.choice = correct;
+  }
+}
+
+}
+
+function submitHand(choice) {
+  if (choice === currentLetter.hand) {
+    score++;
+    document.getElementById("feedback").textContent = '✔️ صحيح';
+  } else {
+    document.getElementById("feedback").textContent = '❌ خطأ';
+  }
+  currentRound++;
+  if (currentRound < 20) {
+    setTimeout(nextRound, 500);
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("letter-box").style.display = "none";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("timer").style.display = "none";
+  document.getElementById("result").textContent = `🎉 لقد أجبت بشكل صحيح على ${score} من 20 جولة!`;
+}
+
+// أدوات مساعدة
+function hideAll() {
+  ["challenge1", "hand-test", "asl-test"].forEach(id => {
+    let el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+}
+
+    </script>
+  </div>
+</body>
+</html>

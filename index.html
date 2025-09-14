@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <img src="loge.png.png" alt="شعار Data Ready" style="width:100px; height:auto;">
+
+  <meta charset="UTF-8">
+  <title>DataReady-Typing</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(to bottom, #f9f7f6, #e7f3fb);
+      background-image: url('https://images.unsplash.com/photo-1606761568499-6e768d45f3b4?auto=format&fit=crop&w=1400&q=80');
+      background-size: cover;
+      background-position: center;
+      color: #333;
+     
+
+    }
+
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      min-height: 100vh;
+      padding: 60px 20px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 50px;
+      color: #d6458b;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      text-align: center;
+      color: #555;
+      font-weight: normal;
+      font-size: 22px;
+      margin-bottom: 40px;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+      margin-bottom: 60px;
+    }
+
+    .card {
+      background-color: #ffffffc5;
+      padding: 25px 20px;
+      border-radius: 15px;
+      width: 220px;
+      text-align: center;
+      font-weight: bold;
+      color: #444;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      background-color: #ffe6f1;
+      transform: scale(1.05);
+      color: #d6458b;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+      margin-top: auto;
+      padding-top: 30px;
+      border-top: 1px solid #ccc;
+    }
+
+    .user-menu {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .user-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .menu {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      background-color: white;
+      color: #444;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      min-width: 160px;
+      text-align: right;
+      z-index: 10;
+    }
+
+    .menu a {
+      display: block;
+      padding: 12px 16px;
+      text-decoration: none;
+      color: #333;
+      border-bottom: 1px solid #eee;
+    }
+
+    .menu a:hover {
+      background-color: #f2f2f2;
+    }
+
+    .intro-text {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 18px;
+      color: #666;
+      line-height: 1.8;
+      max-width: 700px;
+      margin-inline: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="user-menu">
+      <img src="user.png" alt="User" class="user-icon" onclick="toggleMenu()">
+      <div class="menu" id="menu">
+        <a href="login.html">تسجيل دخول</a>
+        <a href="signup.html">مستخدم جديد</a>
+      </div>
+    </div>
+
+    <h1>DataReady-Typing</h1>
+    <h3>ابدأ رحلتك نحو احتراف الطباعة بطريقة ممتعة وتفاعلية</h3>
+
+    <div class="intro-text">
+      أهلاً بك في <strong>DataReady-Typing</strong>، منصتك الذكية لتعلّم الطباعة باللغة العربية والإنجليزية بطريقة علمية، مشوّقة، وتحفيزية.  <br>
+      انطلق معنا في رحلة مليئة بالتحديات، الألعاب، والمهارات التي ستقودك إلى إتقان لوحة المفاتيح بثقة وسرعة. <br>
+      لتكن البداية من هنا... حيث الحروف تُنظَّم، والأفكار تُكتب بحرّية.
+    </div>
+
+    <div class="cards">
+      <div class="card" onclick="location.href='training.html'">📚 التدريب</div>
+      <div class="card" onclick="location.href='challenge.html'">🏆 التحدي</div>
+      <div class="card" onclick="location.href='progress.html'">📈 التقدّم</div>
+      <div class="card" onclick="location.href='contact.html'">💬 التواصل مع المدرب</div>
+    </div>
+
+    <div class="footer">
+      © جميع الحقوق محفوظة لموقع DataReady | داتا جاهزة للطباعة - 2025
+    </div>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("menu");
+      menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.user-icon')) {
+        var dropdowns = document.getElementsByClassName("menu");
+        for (var i = 0; i < dropdowns.length; i++) {
+          dropdowns[i].style.display = "none";
+        }
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>مدرب الطباعة</title>
+  <style>
+    body {
+      font-family: "Tahoma", sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ec98d3, #f797cf);
+      direction: rtl;
+      color: #111;
+      text-align: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 700px;
+      background: #ffffffcc;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.15);
+    }
+    input, button {
+      width: 90%;
+      padding: 14px;
+      margin: 12px auto;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      display: block;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    button {
+      background-color: #1a1817;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+    button:hover { background-color: #d6458b; }
+    .hidden { display: none; }
+    h1 { color: #d6458b; margin-bottom: 10px; }
+    h2 { color: #d6458b; margin-bottom: 10px; }
+    p { font-size: 18px; margin-bottom: 15px; }
+    .nav-btns button { width: 30%; display: inline-block; }
+    .motivation {
+      margin-top: 20px; font-size: 16px; font-weight: bold;
+      color: #333; background: #ffebd6;
+      padding: 10px; border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- صفحة إدخال الاسم -->
+    <div id="nameStep">
+      <h1>DataReady-Typing</h1>
+      <p>👤 الرجاء إدخال اسمك للبدء:</p>
+      <input id="userName" placeholder="أدخل اسمك هنا..." />
+      <button id="startBtn">ابدأ التدريب</button>
+      <div class="motivation">✨ ابدأ رحلتك مع الطباعة السريعة، كل يوم أفضل! 🚀</div>
+    </div>
+
+    <!-- صفحة اختيار الصف -->
+    <div id="menuPage" class="hidden">
+      <h1>اختر الصف للتدريب</h1>
+      <div class="nav-btns">
+        <!-- هنا زر Home Row ينقلك لصفحة home.html -->
+        <button onclick="window.location.href='home.html'">🏠 Home Row</button>
+        <button onclick="alert('صفحة Top Row لم تُجهّز بعد')">🔝 Top Row</button>
+        <button onclick="alert('صفحة Bottom Row لم تُجهّز بعد')">🔽 Bottom Row</button>
+      </div>
+      <div class="motivation">💡 التمرين المستمر يجعلك أسرع وأكثر دقة!</div>
+    </div>
+
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    startBtn.addEventListener('click', () => {
+      const name = document.getElementById('userName').value.trim();
+      if (!name) {
+        alert("⚠️ الرجاء إدخال اسمك أولاً");
+        return;
+      }
+      document.getElementById('nameStep').classList.add('hidden');
+      document.getElementById('menuPage').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
