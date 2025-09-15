@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مدرّب الطباعة — موبايل + لابتوب</title>
+<style>
+:root{
+  --bg:#f7fafc;
+  --fg:#0f172a;
+  --muted:#64748b;
+  --primary:#0ea5e9;
+  --ok:#10b981;
+  --bad:#ef4444;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --shadow:0 6px 24px rgba(2,6,23,.06);
+  --highlight:#fffae6;
+  --keyboard-key:#ffffff;
+  --keyboard-target:#7dd3fc;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;min-height:100vh;
+  background:linear-gradient(180deg,#f0f9ff,#fff);
+  display:flex;justify-content:center;align-items:flex-start;
+  direction:rtl;color:var(--fg);
+}
+.wrap{max-width:980px;width:100%;margin:16px;padding:16px;}
+.card{background:var(--card);border:2px solid var(--border);border-radius:28px;box-shadow:var(--shadow);padding:34px;}
+h1,h2{margin:0;color:#d6458b;}
+button, select, input{border:2px solid var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:600;transition:all .12s ease;}
+button{padding:12px 16px;border-radius:12px;font-size:18px;}
+button.primary{background:linear-gradient(90deg,#7dd3fc,#38bdf8);border:none;color:#00354a;}
+input#userName{ width:95%; font-size:18px; padding:12px; border-radius:12px; }
+.hidden{display:none;}
+.header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.brand{display:flex;align-items:center;gap:10px;}
+.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(45deg,#bae6fd,#7dd3fc);display:flex;justify-content:center;align-items:center;font-weight:800;font-size:16px;color:#00354a;}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;}
+.exercise{padding:12px;border:2px dashed #cfe8ff;border-radius:12px;background:linear-gradient(180deg,#f8fdff,#ffffff);min-height:120px;}
+.exercise .big{font-family:"Courier New",monospace;font-size:20px;line-height:1.9;word-break:break-word;}
+.typed-correct{color:var(--ok);}
+.typed-current{background:var(--highlight);border-radius:8px;padding:2px 6px;font-weight:700;}
+.typed-future{color:var(--muted);}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+.stat{background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px;text-align:center;font-weight:600;}
+.lesson-card{height:100%;display:flex;flex-direction:column;gap:10px;}
+.list{background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px;max-height:260px;overflow:auto;}
+.list-item{padding:8px;border-radius:10px;border:2px solid transparent;cursor:pointer;margin-bottom:6px;transition:all .12s ease;}
+.list-item:hover{background:#f0f9ff;}
+.list-item.active{border-color:#38bdf8;background:#d0f0ff;}
+.motivation{margin-top:12px;font-size:14px;font-weight:bold;color:#333;background:#fffae6;padding:10px;border-radius:10px;text-align:center;}
+@media(max-width:900px){.grid{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}}
+
+/* ======= input ثابت موجود على كل الأجهزة ======= */
+#hiddenInput {
+  position: relative;
+  height: 40px;
+  width: 100%;
+  font-size:18px;
+  padding:10px;
+  border-radius:10px;
+  border:2px solid #ccc;
+  margin-top:10px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- صفحة البداية -->
+<div id="startPage" class="card">
+  <h1>💻 مرحباً بك في مدرّب الطباعة</h1>
+  <p>ادخل اسمك للبدء:</p>
+  <input id="userName" placeholder="أدخل اسمك هنا..." />
+  <div style="display:flex;gap:8px;margin-top:12px;">
+    <button id="btnStart" class="primary">ابدأ</button>
+  </div>
+  <div class="motivation">✨ كل يوم تتقدم أكثر في الطباعة! 🚀</div>
+</div>
+
+<!-- صفحة اختيار الصف -->
+<div id="menuPage" class="card hidden">
+  <h2>اختر الصف للتدريب</h2>
+  <div style="display:flex;gap:8px;margin-top:12px;">
+    <button class="primary" data-page="home">🏠 Home Row</button>
+    <button class="primary" data-page="top">🔝 Top Row</button>
+    <button class="primary" data-page="bottom">🔽 Bottom Row</button>
+  </div>
+  <div class="motivation">💡 اختر صف وابدأ! اضغط على مربع الكتابة للتدريب.</div>
+</div>
+
+<!-- صفحة التمرين -->
+<div id="trainerPage" class="card hidden">
+  <div class="header-row">
+    <div class="brand"><div class="logo">TT</div><div><h2 id="lessonTitle">الدرس</h2></div></div>
+    <div style="display:flex;gap:8px;">
+      <button id="btnPrev">◀ السابق</button>
+      <button id="btnNext" class="primary">التالي ▶</button>
+      <button id="btnRestart">🔄 إعادة</button>
+    </div>
+  </div>
+
+  <input id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="✍️ اكتب هنا للتدريب..." />
+
+  <div class="grid" style="margin-top:8px;">
+    <div>
+      <div class="exercise">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div id="drillInfo">تمرين 0 / 0</div>
+        </div>
+        <div id="display" class="big" aria-live="polite" style="min-height:44px;cursor:text;"></div>
+      </div>
+
+      <div class="stats" style="margin-top:10px;">
+        <div class="stat"><div style="color:var(--muted)">السرعة (WPM)</div><strong id="wpm">0.0</strong></div>
+        <div class="stat"><div style="color:var(--muted)">الدقّة %</div><strong id="acc">100</strong></div>
+        <div class="stat"><div style="color:var(--muted)">الأخطاء</div><strong id="err">0</strong></div>
+        <div class="stat"><div style="color:var(--muted)">الوقت (ث)</div><strong id="secs">0</strong></div>
+      </div>
+    </div>
+
+    <div class="lesson-card">
+      <div style="font-weight:800">خطة الدروس</div>
+      <div class="list" id="drillList"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ======= بيانات الدروس =======
+const LESSONS_DATA = { 
+  home:[
+    {title:'F & J', drills:['ffffffjjjjjj','f f f   j j j','fj fj fj   jf jf jf','fff jjj fff jjj fjfj fjfj fjjf jffj fjjf fj fj fj ff jj fj jf jf jf ffjj jjff fjfj ff jj ff jj fj jf fj jf ffjj jjff fjf jfjf fjfj fjfj'], keyboard:['a','s','d','f','g','h','j','k','l',';']},
+    {title:'D & K', drills:['d d d   k k k','dk dk dk   kd kd kd','dd kk dd kk dk kd dk kd ddd kkk dkdk kdkd dk dk dk kd kd ddkk kkdd dkdk dkdk dddk ddkk kkdd dkdk dkdk dk kd dk kd ddd kkk ddk '], keyboard:['a','s','d','f','g','h','j','k','l',';']},
+    {title:'f-D & J-K', drills:['kfj dfd jfj kfk djf',' dfkj  jfkd kkkd fjjf dkfj jdfk kjff dkjf  fjkd dkff jjkd fjdf kfjk djkf   fkjd','jjff kdkf djfj ffkd kjdf jfkj ddkj fjff kfjd jdkj fjkk djff jfkd kd df fjjf kkfj jfjk dfkj fjkd jkjf kjff  jddk fjjf kfkf dkjf jffk fjjd kdfj kjjk fjfj '], keyboard:['a','s','d','f','g','h','j','k','l',';']},
+
+    {title:'S & L', drills:['s s s   l l l','sl sl sl   ls ls ls','ss ll ss ll sl ls sl ls sss lll slsl llsl sl sl sl ls ls llll llss slsl slsl sssl  llsl ssll ssss slsl slsl ssll  ssl lss ssl lss slsl slsl'], keyboard:['a','s','d','f','g','h','j','k','l',';']},
+    {title:'A & ;', drills:['aa ;; aa ;; a;a ;a; a;a; aaa ;;; a;a; ;a;a','aa;; ;;aa a;a; a;a; aaa; ;;aa a; a; a; ;a ;a','a;a; ;a;a aa;; ;;aa aaa ;;; a;a; ;a;a a;a; ;a;a aa;; ;;aa aaa ;;; a;a; ;a;a'], keyboard:['a','s','d','f','g','h','j','k','l',';']},
+    {title:'G & H', drills:['gg hh gg hh gh hg gh hg ggg hhh ghgh hghg','gh gh gh hg hg gghh hhgg ghgh ghgh gggg hhhh','ghgg ghgh hh hg gh hg gghh hhgg ghgh ghgh','ggh hgg ggh hgg ghgh hhgh gghh hhhg gghh'], keyboard:['a','s','d','f','g','h','j','k','l',';']},
+    {title:'كلمات من الحروف', drills:['sad; lad all fa;ll ask alas salsa had; dash shall',';had dash shall','fad ;; gala sall half salad shall flak hall lass','lad s;ag hall ;gall salad fall lass hall gag lad sag hall; gall salad fall lass hall gag;'], keyboard:['a','s','d','f','g','h','j','k','l',';']}
+  ],
+  //
+  top:[ 
+    {title:'R & U', 
+drills:[
+  'rrrrr uuuuu rrrr uuuu rr uu rr uu ru ur ru ur rrr uu rr uu ru ur ru ur ru ur rr uu rr uu ru ur  ruur  rrrrr uuuuu',
+  'fjur ru  ur ur ru rrff juur juuu jrfu ru ur ur ru rfjur ur ur ru ru ur rrr jjj fff uuu ruurr uuurr uu uur rfruj uuru',
+  'rr jfur urfj rfju jrru frjuu ffruj jjur fjur furj  uu ru ur ru ur rr uu rrrr  uu ru ur  ruur  rrrrr uuuuu\n rrrr uuuu ru jjju uuuj fffr \nru urur ru ru rrrf ru ru uruu jrfu'
+], 
+keyboard:['q','w','e','r','t','y','u','i','o','p'],
+},
+
+
+{title:'E & I', 
+drills:[
+  'eeeee iiiii eeee iiii ee ii ee ii ei ie \nei ie eee ii ee ii ei ie ei ie',
+  'ei ei ie ie ei ie eii e ei ie   ie ei ei ie iee ei ie ei ie ei ie ie ei ei ie ie ei ei',
+  'ee ii ee ii ei ie ei ie ee ii ee ii ei ie ei ie ee ii ee ii ei ie ei ie iieii  eeeiee'
+], 
+keyboard:['q','w','e','r','t','y','u','i','o','p']},
+
+{title:'W & O', 
+drills:[
+  'wwwww ooooo wwww oooo ww oo ww oo wo ow wo ow www oo ww oo wo ow wo ow',
+  'wo wo ow ow wo ow wo ow wo ow wo ow wo ow woow',
+  'ww oo ww oo wo ow wo ow ww oo ww oo wo ow wo   ow ww oo ww oo wo ow wo ow wwww ooooo wwww Woooo ww oo ww oo wo ow wo ow www oo ww'
+], 
+keyboard:['q','w','e','r','t','y','u','i','o','p']},
+
+{title:'Q & P', 
+drills:[
+  'qqqqq ppppp qqqq pppp qq pp qq pp qp pq qpp   q qqq pp qq pp qp pq qp p q',
+  'q p qp pq pq qp pq qp pqqp pq qp pq qp pq qp pq',
+  'qq pp qq pp qp pq qp pq qq pp qq pp qp pq qp pq qq pp qq ppqp pq qp pqppppp  qqqq pppp qq pp qq pp qp pq qp pq qqq pp qq pp qp'
+], 
+keyboard:['q','w','e','r','t','y','u','i','o','p']},
+
+{title:'T & Y', 
+drills:[
+  'ttttt yyyyy tttt   yyyy tt yy tt yy ty yt ty yt ttt yy  tt yy  ty  yt tyyt'  ,
+  'tyty yty tty yt ty yt ty yt ty yt ty yt ty yt  ',
+  'tt yy tt yy ty ytty yt tt  yy ttyy ty yt ty  yt tt yy tt yy ty yt tyyt tty   yt ty yt ty yt ty yt ty '
+], 
+keyboard:['q','w','e','r','t','y','u','i','o','p']},
+
+{title:'كلمات من الحروف', 
+drills:[
+  'quit pure tie pie ripe true quip queue quit pure tie pie ripe true quip',
+  'queue quip ripe true tie pure quite pie ripe tie pure queue quip ripe',
+  'tie ripe pure quite quit pie true quip queue ripe pure tie pie ripe true'
+], 
+keyboard:['q','w','e','r','t','y','u','i','o','p']}
+
+  ],
+  
+bottom:[
+
+{title:'V & M', 
+drills:[
+  'v v v   m m m v v v   m m m v v v   m m m vv mm vv mm vm mv vm mv vv mm vm vm mv mv vv mm vv mm vm mv vm mv',
+  'vm vm mv mv vm vm mv vm vm vm mv mv vm vm mv vm vm vm mv mv vm vm mv vm vm vm mv mv vm vm mv vm vm vm mv mv',
+  'vv mm vv mm vm mv vm mv vv mm vm vm mv mv vv mm vm vm mv mv vv mm vv mm vm mv vm mv vv mm vm vm mv mv'
+], 
+keyboard:['z','x','c','v','b','n','m',',','.','/']},  
+
+{title:'C & ,', drills:['c c c   , , , c c c   , , , c c c   , , , cc ,, cc ,, c, ,c c, ,c cc ,, cc ,, c, ,c c, ,c','c, c, ,c ,c ,c c, c, ,c ,c ,c c, c, ,c ,c ,c c, c, ,c ,c ,c c, c, ,c ,c ,c','cc ,, cc ,, c, ,c c, ,c cc ,, cc ,, c, ,c c, ,c cc ,, cc ,, c, ,c c, ,c'], 
+keyboard:['z','x','c','v','b','n','m',',','.','/']},  
+
+{title:'X & .', 
+drills:[
+  'x x x   . . . x x x   . . . x x x   . . . xx .. xx .. x. .x x. \n .x xx .. xx .. x. .x x. .x',
+  'x. x. .x .x .x x. x. .x .x .x x. x. .x .x .x x. x. .x .x .x',
+  'xx .. xx .. x. .x x. .x xx .. xx .. x. .x x. .x xx .. xx .. x. .x x. .x'
+], 
+keyboard:['z','x','c','v','b','n','m',',','.','/']},  
+
+{title:'Z & /', 
+drills:[
+  'z z z   / / / z z z   / / / z z z   / / / zz // zz // z/ /z z/ /z zz // zz // z/ /z z/ /z',
+  'z/ z/ /z /z /z z/ z/ /z /z /z z/ z/ /z /z /z z/ z/ /z /z /z',
+  'zz // zz // z/ /z z/ /z zz // zz // z/ /z z/ /z zz // zz // z/ /z z/ /z'
+], 
+keyboard:['z','x','c','v','b','n','m',',','.','/']},  
+
+{title:'B & N', 
+drills:[
+  'b b b   n n n b b b   n n n b b b   n n n bb nn bb nn bn nb bn nb bb nn bb nn bn nb bn nb',
+  'bn bn nb nb nb bn bn nb nb nb bn bn nb nb nb bn bn nb nb nb bn bn nb nb nb',
+  'bb nn bb nn bn nb bn nb bb nn bb nn bn nb bn nb bb nn bb nn bn nb bn nb'
+], 
+keyboard:['z','x','c','v','b','n','m',',','.','/']},  
+
+{title:'كلمات من الحروف', 
+drills:['cab ban// van bag can, nab cab ban, van.. bag can na,b cab b,an van bag can nab','ca.b van bag, can nab cab ban van .,B //M bag can nab cab van bag can nab c//ab ban',  'cab ba/g can nab cab ban van bag ca./n nab cab bag can nab cab ban van. bag ../,'
+], 
+keyboard:['z','x','c','v','b','n','m',',','.','/']}
+
+]
+
+};
+
+
+// ======= التطبيق =======
+document.addEventListener('DOMContentLoaded', () => {
+  const startPage=document.getElementById('startPage');
+  const menuPage=document.getElementById('menuPage');
+  const trainerPage=document.getElementById('trainerPage');
+  const btnStart=document.getElementById('btnStart');
+  const lessonButtons=document.querySelectorAll('[data-page]');
+  const hiddenInput=document.getElementById('hiddenInput');
+  const display=document.getElementById('display');
+  const drillInfo=document.getElementById('drillInfo');
+  const btnPrev=document.getElementById('btnPrev');
+  const btnNext=document.getElementById('btnNext');
+  const btnRestart=document.getElementById('btnRestart');
+  const drillList=document.getElementById('drillList');
+  const lessonTitle=document.getElementById('lessonTitle');
+
+  let currentLessons=[], currentDrills=[], currentLessonIndex=0, currentDrillIndex=0;
+  let startTime=null;
+
+  btnStart.addEventListener('click',()=>{startPage.classList.add('hidden'); menuPage.classList.remove('hidden');});
+
+  lessonButtons.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const page=btn.getAttribute('data-page');
+      startLesson(page);
+      hiddenInput.focus();
+    });
+  });
+
+  function startLesson(page){
+    menuPage.classList.add('hidden');
+    trainerPage.classList.remove('hidden');
+    lessonTitle.textContent = page==='home'?'Home Row':page==='top'?'Top Row':'Bottom Row';
+    currentLessons=LESSONS_DATA[page]||[];
+    currentLessonIndex=0;
+    currentDrills=currentLessons[0].drills;
+    currentDrillIndex=0;
+    renderDrillList();
+    showDrill(0);
+  }
+
+  function renderDrillList(){
+    drillList.innerHTML='';
+    currentLessons.forEach((lesson,li)=>{
+      const title=document.createElement('div');
+      title.style.fontWeight='bold';
+      title.style.marginTop='6px';
+      title.textContent=lesson.title;
+      drillList.appendChild(title);
+      lesson.drills.forEach((d,di)=>{
+        const it=document.createElement('div');
+        it.className='list-item'+(li===currentLessonIndex&&di===currentDrillIndex?' active':'');
+        it.textContent=d;
+        it.addEventListener('click',()=>{currentLessonIndex=li; currentDrills=lesson.drills; showDrill(di); hiddenInput.focus();});
+        drillList.appendChild(it);
+      });
+    });
+  }
+
+  function showDrill(idx){
+    currentDrillIndex=idx;
+    const t=currentDrills[idx]||'';
+    drillInfo.textContent=`${currentLessons[currentLessonIndex].title} - تمرين ${idx+1}/${currentDrills.length}`;
+    hiddenInput.value='';
+    startTime=Date.now();
+    updateDisplay(t,'');
+    renderDrillList();
+  }
+
+  function updateDisplay(target,typed){
+    if(!target){display.innerHTML='';return;}
+    let html='', len=typed.length;
+    for(let i=0;i<target.length;i++){
+      const ch=target[i];
+      if(i<len) html+=typed[i]===ch?`<span class="typed-correct">${ch}</span>`:`<span style="color:var(--bad)">${ch}</span>`;
+      else if(i===len) html+=`<span class="typed-current">${ch}</span>`;
+      else html+=`<span class="typed-future">${ch}</span>`;
+    }
+    display.innerHTML=html;
+
+    const err=countErrors(target,typed);
+    document.getElementById('err').textContent=err;
+    const acc=typed.length?Math.max(0,Math.round(((Math.max(0,typed.length-err))/typed.length)*100)):100;
+    document.getElementById('acc').textContent=acc;
+    const elapsed=(Date.now()-startTime)/1000;
+    document.getElementById('secs').textContent=elapsed.toFixed(1);
+    const words=typed.trim().split(/\s+/).length;
+    document.getElementById('wpm').textContent=((words/elapsed)*60).toFixed(1);
+  }
+
+  function countErrors(target,typed){
+    let c=0;
+    for(let i=0;i<typed.length&&i<target.length;i++){if(typed[i]!==target[i])c++;}
+    if(typed.length>target.length)c+=typed.length-target.length;
+    return c;
+  }
+
+  hiddenInput.addEventListener('input',()=>{updateDisplay(currentDrills[currentDrillIndex],hiddenInput.value); if(hiddenInput.value.length>=currentDrills[currentDrillIndex].length) setTimeout(()=>{goNext();},300);});
+  hiddenInput.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault(); goNext();}});
+  btnNext.addEventListener('click',()=>{goNext(); hiddenInput.focus();});
+  btnPrev.addEventListener('click',()=>{if(currentDrillIndex>0) showDrill(currentDrillIndex-1); hiddenInput.focus();});
+  btnRestart.addEventListener('click',()=>{showDrill(currentDrillIndex); hiddenInput.focus();});
+  display.addEventListener('click',()=>hiddenInput.focus());
+
+  function goNext(){
+    if(currentDrillIndex<currentDrills.length-1) showDrill(currentDrillIndex+1);
+    else if(currentLessonIndex<currentLessons.length-1){currentLessonIndex++; currentDrills=currentLessons[currentLessonIndex].drills; showDrill(0);}
+  }
+});
+</script>
+</body>
+</html>

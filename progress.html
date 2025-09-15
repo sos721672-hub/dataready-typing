@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>التقدم - DataReady</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(to bottom, #f9f7f6, #e7f3fb);
+      color: #444;
+      padding: 50px 20px;
+      text-align: center;
+    }
+    h1 { color: #d6458b; font-size: 40px; margin-bottom: 20px; }
+    table {
+      width: 90%;
+      margin: auto;
+      border-collapse: collapse;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      background-color: #fff8fa;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td { padding: 15px; border-bottom: 1px solid #eee; }
+    th { background-color: #ffe6f1; color: #d6458b; }
+    tr:hover { background-color: #fff0f7; }
+  </style>
+</head>
+<body>
+  <h1>📈 جدول التقدّم الخاص بك</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>👤 الاسم</th>
+        <th>🎯 الدرس</th>
+        <th>📊 الدقة %</th>
+        <th>⚡ السرعة (WPM)</th>
+        <th>❌ الأخطاء</th>
+        <th>🗓️ التاريخ</th>
+      </tr>
+    </thead>
+    <tbody id="progressBody">
+      <tr><td colspan="6">جاري التحميل...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    // جلب النتائج من التخزين المحلي أو من API خارجي
+    let username = prompt("ادخل اسمك لعرض التقدم:").trim();
+    const allProgress = JSON.parse(localStorage.getItem("progress")) || [];
+    const userProgress = allProgress.filter(p => p.username === username);
+
+    const body = document.getElementById("progressBody");
+    body.innerHTML = "";
+    if(userProgress.length === 0){
+      body.innerHTML = "<tr><td colspan='6'>لا توجد بيانات لهذا المستخدم</td></tr>";
+    } else {
+      userProgress.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.username}</td>
+          <td>${p.lesson}</td>
+          <td>${p.accuracy}%</td>
+          <td>${p.speed}</td>
+          <td>${p.errors}</td>
+          <td>${p.date}</td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
